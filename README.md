@@ -1,4 +1,4 @@
-# Heatmap Calendar plugin for Obsidian
+# Heatmap Tracker plugin for Obsidian
 
 Visualize your data in a heatmap calendar similar to the github activity calendar using this [Obsidian](https://obsidian.md/) plugin.
 
