@@ -1,0 +1,171 @@
+/* Base styles */
+.heatmap-calendar-graph,
+.heatmap-calendar-graph ul,
+.heatmap-calendar-graph>* {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.heatmap-calendar-graph {
+  font-size: 0.65em;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'year months'
+    'days boxes';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  width: 100%;
+  padding: 12px; /* 0px caused overflow and scrollbars */
+}
+
+/* Months */
+.heatmap-calendar-months {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-area: months;
+  margin: 0.1em 0 0.3em;
+  grid-gap: 0.3em;
+}
+
+/* Days */
+.heatmap-calendar-days {
+  grid-area: days;
+  margin: 0 0.3em 0 0.1em;
+  white-space: nowrap;
+}
+
+/* Boxes */
+.heatmap-calendar-boxes {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(53, minmax(0, 1fr));
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  grid-area: boxes;
+  grid-gap: 2px;
+}
+
+.heatmap-calendar-boxes li {
+  position: relative;
+  font-size: 0.75em;
+  width: 100%;
+  border-radius: 2px;
+  background-color: #ebedf0;
+  margin-inline-start: auto !important;
+}
+
+.heatmap-calendar-boxes li:hover {
+  transform: scale(1.4);
+  border: solid 1px rgb(61, 61, 61);
+  cursor: pointer;
+}
+
+.heatmap-calendar-arrow {
+  cursor: pointer;
+}
+
+.heatmap-calendar-year-display {
+  margin: 0 12px;
+}
+
+.heatmap-calendar-boxes li:not(.task-list-item)::before {
+  content: unset;
+}
+
+.heatmap-calendar-boxes .internal-link {
+  text-decoration: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.heatmap-calendar-boxes .today {
+  border: solid 1px rgb(61, 61, 61);
+}
+
+.theme-dark .heatmap-calendar-boxes .isEmpty {
+  background: #333;
+}
+
+/* Year */
+.heatmap-calendar-year {
+  grid-area: year;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Days visibility */
+.heatmap-calendar-days li:nth-child(odd) {
+  visibility: hidden;
+}
+
+/* Settings */
+.heatmap-calendar-settings-colors__color-box {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.heatmap-calendar-settings-colors__color-box:first-child {
+  margin-left: 0;
+}
+
+.heatmap-calendar-settings-colors__color-name {
+  display: inline-block;
+}
+
+.heatmap-calendar-settings-colors__container {
+  align-items: center;
+  border-top: 1px solid var(--background-modifier-border);
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5em 0;
+}
+
+.heatmap-calendar-settings-colors__container h4 {
+  margin: 0.5em 0;
+}
+
+.heatmap-calendar-settings-colors__new-color-input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.heatmap-calendar-settings-colors__new-color-input-container input {
+  margin-right: 1em;
+}
+
+.heatmap-calendar-settings-colors__new-color-input-value {
+  flex-grow: 1;
+}
+
+
+/* ----
+/* ---- DEV Only ---- */
+/* ----
+
+/* for putting the settings window off to the side whilst taking screenshots */
+/*
+.modal-container {
+  justify-content: left !important; 
+  padding-left: 20px !important;
+}
+.modal-bg {
+  opacity: 0% !important;
+}
+.modal-container.mod-dim .modal {
+  box-shadow: var(--shadow-s) !important;
+}
+.modal.mod-sidebar-layout {
+  width: 700px !important;
+}
+.vertical-tab-content::-webkit-scrollbar {
+  display: none;
+}
+*/
+
+/* ----
+/* ---- DEV Only /END ---- */
+/* ----
