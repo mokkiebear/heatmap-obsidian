@@ -1,17 +1,17 @@
 # Heatmap Tracker plugin for Obsidian
 
-Visualize your data in a heatmap calendar similar to the github activity calendar using this [Obsidian](https://obsidian.md/) plugin.
+Visualize your data in a heatmap tracker similar to the github activity tracker using this [Obsidian](https://obsidian.md/) plugin.
 
 
 
-Useful for tracking progress for exercise, finances, social time, project progression, passions, vices etc.   
+This plugin is useful for tracking progress for exercise, finances, social time, project progression, passions, learning progress and so on.   
 
-To be used with [Obsidian Dataview](https://blacksmithgu.github.io/obsidian-dataview/), but could be used standalone or with other plugins aswell (if you know some javascript).
+To be used with [Obsidian Dataview](https://blacksmithgu.github.io/obsidian-dataview/), but could be used standalone or with other plugins as well (if you know some javascript).
 
 <p>
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/heatmap_examples_dark.gif?raw=true">
-      <source media="(prefers-color-scheme: light)" srcset="https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/heatmap_examples_light.gif?raw=true">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
       <img alt="Shows a black logo in light color mode and a white one in dark color mode." src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
     </picture>
 </p>

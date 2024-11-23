@@ -15,6 +15,7 @@ interface CalendarData {
   defaultEntryIntensity: number;
   intensityScaleStart: number;
   intensityScaleEnd: number;
+  header: string;
 }
 
 interface CalendarSettings extends CalendarData {
@@ -40,6 +41,7 @@ const DEFAULT_SETTINGS: CalendarSettings = {
   intensityScaleStart: 1,
   intensityScaleEnd: 5,
   weekStartDay: 1,
+  header: ''
 };
 
 export default class HeatmapCalendar extends Plugin {
@@ -95,11 +97,17 @@ export default class HeatmapCalendar extends Plugin {
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   }
 
-  public createCalendarHeader(parent: HTMLElement, year: number) {
+  public createCalendarHeader(parent: HTMLElement, year: number, header: string) {
     const headerDiv = createDiv({
       cls: 'heatmap-calendar-header',
       parent,
     });
+
+    // const headerText = createSpan({
+    //   cls: 'heatmap-calendar-header-text',
+    //   text: header,
+    //   parent: headerDiv,
+    // });
 
     // Left arrow
     const leftArrow = createSpan({
@@ -139,8 +147,18 @@ export default class HeatmapCalendar extends Plugin {
     el: HTMLElement,
     calendarData: CalendarData
   ): void => {
-    // Clear the parent element to prevent duplication
-    el.empty();
+    const elContent = el.querySelector('.heatmap-calendar-graph');
+    if (elContent) {
+      // Clear the parent element to prevent duplication
+      elContent.innerHTML = '';
+    }
+
+    // Create the main container for the calendar
+    const heatmapCalendarGraphDiv = elContent ?? createDiv({
+      cls: 'heatmap-calendar-graph',
+      parent: el,
+    });
+
 
     // Get the current year from calendarData or default settings
     const year = calendarData.year ?? this.settings.year;
@@ -272,13 +290,7 @@ export default class HeatmapCalendar extends Plugin {
       boxes.push(box);
     }
 
-    // Create the main container for the calendar
-    const heatmapCalendarGraphDiv = createDiv({
-      cls: 'heatmap-calendar-graph',
-      parent: el,
-    });
-
-    const { leftArrow, rightArrow } = this.createCalendarHeader(heatmapCalendarGraphDiv, year);
+    const { leftArrow, rightArrow } = this.createCalendarHeader(heatmapCalendarGraphDiv, year, calendarData.header);
 
     // Event listener for the left arrow
     leftArrow.addEventListener('click', () => {
@@ -348,7 +360,7 @@ export default class HeatmapCalendar extends Plugin {
 
     this.addSettingTab(new HeatmapCalendarSettingsTab(this.app, this));
 
-    window.renderHeatmapCalendar = this.renderHeatmapCalendar;
+    window.renderHeatmapCalendar = this.renderHeatmapCalendar.bind(this);
   }
 
   onunload() {

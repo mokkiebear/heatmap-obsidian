@@ -4,9 +4,8 @@
 
 function getInitialData() {
 	// Today's date
-	const today = new Date(2024, 10, 23); // 23 ноября 2024 (месяцы в JS начинаются с 0)
+	const today = new Date(2024, 10, 23); 
 	// Number of days to subtract
-	// I'm watching ZTM already for 729 days
 	const daysToSubtract = 729;
 	
 	// Calculate start date
@@ -33,7 +32,7 @@ function getInitialData() {
 }
 
 
-dv.span("** Learning Programming **")
+dv.span("** 🗄️ Example: If you need to prefill your data 🗄️ **")
 
 const calendarData = {
       year: 2024,
@@ -49,16 +48,11 @@ renderHeatmapCalendar(this.container, calendarData)
 
 ```
 
-
-
-
 ```dataviewjs
-
-dv.span("**🏋️ Exercise 🏋️** (Green if you reached your goal of 45 minutes)")
 
 const calendarData = {
     year: 2024,
-    intensityScaleEnd: 45 * 60 * 1000, //convert 45minutes to millis
+    intensityScaleEnd: 45 * 60 * 1000, //convert 45 minutes to millis
     colors: {
         red: ["#ff9e82","#ff7b55","#ff4d1a","#e73400","#bd2a00",
         "hsl(132, 90%, 40%)"] //last one green
@@ -70,17 +64,18 @@ for(let page of dv.pages('"daily notes"').where(p=>p.exercise)){
     calendarData.entries.push({
         date: page.file.name,
         intensity: page.exercise
-    })
-       
+    });
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+dv.paragraph("**🏋️ Exercises 🏋️**");
+dv.paragraph("**Green** - if you achieved your exercises goal (45 minutes in this example)");
 
+renderHeatmapCalendar(this.container, calendarData);
 ```
 
 ```dataviewjs
 
-dv.span("** Steps **")
+dv.span("** 👣 Steps 👣 **")
 
 const calendarData = {
     year: 2024, // optional, remove this line to autoswitch year
@@ -101,10 +96,10 @@ renderHeatmapCalendar(this.container, calendarData)
 ```
 ```dataviewjs
 
-dv.span("** Steps ** (11 intensities instead of 5)")
+dv.span("** 👣 Steps 👣 ** (11 intensities instead of 5)")
 
 const calendarData = {
-    year: 2022, // optional, remove this line to autoswitch year
+    year: 2024, // optional, remove this line to autoswitch year
     entries: [],
     colors: {
         oldGithubGreen11:[
@@ -137,13 +132,13 @@ renderHeatmapCalendar(this.container, calendarData)
 ```
 ```dataviewjs
 
-dv.span("** Steps ** (custom scale from 250 to 450)")
+dv.span("** 👣 Steps 👣 ** (custom scale from 1000 to 10000)")
 
 const calendarData = {
-    year: 2022, // optional, remove this line to autoswitch year
+    year: 2024, // optional, remove this line to autoswitch year
     entries: [],
-    intensityScaleStart: 250,
-    intensityScaleEnd: 450
+    intensityScaleStart: 1000,
+    intensityScaleEnd: 10000
 }
 
  
@@ -160,12 +155,12 @@ renderHeatmapCalendar(this.container, calendarData)
 ```
 ```dataviewjs
 
-dv.span("** Steps ** (11 intensities + scale from 150)")
+dv.span("** 👣 Steps 👣 ** (11 intensities + scale from 2000)")
 
 const calendarData = {
     year: 2022, // optional, remove this line to autoswitch year
     entries: [],
-    intensityScaleStart: 150,
+    intensityScaleStart: 2000,
     colors: {
         oldGithubGreen11:[
             "hsl(65, 83%, 88%)","hsl(70, 77%, 78%)",
@@ -196,7 +191,7 @@ renderHeatmapCalendar(this.container, calendarData)
 dv.span("** Learning **")
 
 const calendarData = {
-    year: 2022,
+    year: 2024,
     colors: {
         blue: ["#ffdf04","#ffbe04","#ff9a03","#ff6d02","#ff2c01"]
     },
@@ -205,7 +200,6 @@ const calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.learning)){
-	dv.paragraph(page.file.name + " Alcohol units: " + page.alcohol)
     calendarData.entries.push({
         date: page.file.name,
         intensity: page.learning
@@ -244,7 +238,7 @@ renderHeatmapCalendar(this.container, calendarData)
 
 ```dataviewjs
 
-dv.span("**🔗learning **- Dont break the chain! 🔗🔗🔗🔗")
+dv.span("**🔗 learning **- Dont break the chain! 🔗🔗🔗🔗")
 
 const calendarData = {
     year: 2022,
@@ -268,85 +262,6 @@ for(let page of dv.pages('"daily notes"').where(p=>p.learning)){
 renderHeatmapCalendar(this.container, calendarData)
 
 ```
-
-```dataviewjs
-//
-// Using multiple colors for different variations of entry
-//
-
-dv.span("**Time spent with my friend Greg in 2022 :)**")
-
-const calendarData = {
-    year: 2022,
-    colors: {
-        blue: ["#8cb9ff","#69a3ff","#428bff","#1872ff","#0058e2"],
-        pink: ["#ff96cb","#ff70b8","#ff3a9d","#ee0077","#c30062"],
-    },
-    entries: []
-}
-
-for(let page of dv.pages('"daily notes"').where(p=>p.social)){
-
-    let color = ""
-    if(page.social.greg.initiative == "incoming"){color="pink"}
-    
-    //dv.span("page.file.name: "+page.file.name)
-    calendarData.entries.push({
-        date: page.file.name,
-        intensity: page.social.greg.time,
-        color: color
-    })
-       
-}
-
-renderHeatmapCalendar(this.container, calendarData)
-
-```
-
-```dataviewjs
-
-dv.span("** 😊 Mood  😥**")
-
-const hue1 = 13 //red
-const hue2 = 132 //green
-
-const calendarData = { 
-    year: 2022,
-    intensityScaleStart: 1,
-    intensityScaleEnd: 9,
-    colors: {   // optional, defaults to green
-        red2greenX21: [
-            `hsl(${hue1}, 100%, 37%)`,     // 1 - darkest red (worst mood)
-            `hsl(${hue1}, 100%, 50%)`,     // 2 - 
-            `hsl(${hue1}, 100%, 60%)`,     // 3 - 
-            `hsl(${hue1}, 100%, 77%)`,     // 4 - lightest red
-            `hsl(0, 0%, 80%)`,             // 5 - gray (neutral mood)
-            `hsl(${hue2*0.7}, 70%, 72%)`,  // 6 - lightest green
-            `hsl(${hue2*0.85}, 43%, 56%)`, // 7 - 
-            `hsl(${hue2}, 49%, 36%)`,      // 8 - 
-            `hsl(${hue2}, 59%, 24%)`,      // 9 - darkest green (best mood)
-        ],
-    },
-    entries: [] // populated in the DataviewJS loop below
-}
-
-for(let page of dv.pages('"daily notes"').where(p=>p.mood)){ 
-
-    calendarData.entries.push({
-        date: page.file.name, 
-        intensity: page.mood,
-    })
-      
-}
-
-
-renderHeatmapCalendar(this.container, calendarData)
-
-
-```
-
-
-
 
 ## For testing
 ```dataviewjs
