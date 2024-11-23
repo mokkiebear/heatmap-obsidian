@@ -63,7 +63,8 @@ const calendarData = {
 for(let page of dv.pages('"daily notes"').where(p=>p.exercise)){
     calendarData.entries.push({
         date: page.file.name,
-        intensity: page.exercise
+        intensity: page.exercise,
+        content: await dv.span(`[](${page.file.name})`)
     });
 }
 

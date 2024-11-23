@@ -141,6 +141,16 @@
   flex-grow: 1;
 }
 
+.heatmap-calendar-boxes.separate-months {
+  grid-auto-flow: column;
+  grid-template-columns: repeat(64, minmax(0, 1fr));
+  grid-area: boxes;
+}
+
+.theme-dark .heatmap-calendar-boxes .today {
+  border: solid 1px white;
+}
+
 
 /* ----
 /* ---- DEV Only ---- */

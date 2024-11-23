@@ -1,5 +1,7 @@
 import { Plugin } from 'obsidian';
 import HeatmapCalendarSettingsTab from './settings';
+import { getDayOfYear, getLastDayOfYear, getNumberOfEmptyDaysBeforeYearStarts, isValidDate, mapRange } from './utils/core';
+import { initializeCalendarContainer, renderCalendarHeader, renderDayLabels, renderMonthLabels } from './utils/rendering';
 
 declare global {
   interface Window {
@@ -15,12 +17,13 @@ interface CalendarData {
   defaultEntryIntensity: number;
   intensityScaleStart: number;
   intensityScaleEnd: number;
-  header: string;
+  separateMonths: boolean;
 }
 
 interface CalendarSettings extends CalendarData {
   colors: { [index: string | number]: string[] };
   weekStartDay: number;
+  separateMonths: boolean;
 }
 
 interface Entry {
@@ -28,7 +31,17 @@ interface Entry {
   intensity?: number;
   color: string;
   content: string | HTMLElement;
+  separateMonths?: boolean;
 }
+
+interface Box {
+  backgroundColor?: string;
+  date?: string;
+  content?: string | HTMLElement;
+  classNames?: string[];
+}
+
+type Colors = { [index: string | number]: string[] };
 
 const DEFAULT_SETTINGS: CalendarSettings = {
   year: new Date().getFullYear(),
@@ -41,129 +54,27 @@ const DEFAULT_SETTINGS: CalendarSettings = {
   intensityScaleStart: 1,
   intensityScaleEnd: 5,
   weekStartDay: 1,
-  header: ''
+  separateMonths: true,
 };
 
 export default class HeatmapCalendar extends Plugin {
   settings: CalendarSettings = DEFAULT_SETTINGS;
 
-  /**
-   * Removes HTMLElements from entries that are outside of the displayed year.
-   * @param entries The calendar entries.
-   * @param year The displayed year.
-   */
-  removeHtmlElementsNotInYear(entries: Entry[], year: number) {
-    const calEntriesNotInDisplayedYear =
-      entries.filter((e) => new Date(e.date).getFullYear() !== year) ?? this.settings.entries;
-
-    calEntriesNotInDisplayedYear.forEach((e) => {
-      if (e.content instanceof HTMLElement) {
-        e.content.remove();
+  getEntriesForYear(entries: Entry[], year: number): Entry[] {
+    return entries.filter((e) => {
+      if (!isValidDate(e.date)) {
+        return false;
       }
-    });
+
+      return new Date(e.date).getFullYear() === year;
+    }) ?? this.settings.entries;
   }
 
-  clamp(input: number, min: number, max: number): number {
-    return input < min ? min : input > max ? max : input;
+  getCurrentYear(calendarData: CalendarData): number {
+    return calendarData.year ?? this.settings.year;
   }
 
-  map(
-    current: number,
-    inMin: number,
-    inMax: number,
-    outMin: number,
-    outMax: number
-  ): number {
-    const mapped: number =
-      ((current - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-    return this.clamp(mapped, outMin, outMax);
-  }
-
-  getWeekdayShort(dayNumber: number): string {
-    return new Date(1970, 0, dayNumber + this.settings.weekStartDay + 4).toLocaleDateString(
-      'en-US',
-      { weekday: 'short' }
-    );
-  }
-
-  public isValidDate(dateString: string): boolean {
-    const date = new Date(dateString);
-    return !isNaN(date.getTime());
-  }
-
-  public getDayOfYear(date: Date): number {
-    const startOfYear = new Date(date.getFullYear(), 0, 0);
-    const diff = date.getTime() - startOfYear.getTime();
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
-  }
-
-  public createCalendarHeader(parent: HTMLElement, year: number, header: string) {
-    const headerDiv = createDiv({
-      cls: 'heatmap-calendar-header',
-      parent,
-    });
-
-    // const headerText = createSpan({
-    //   cls: 'heatmap-calendar-header-text',
-    //   text: header,
-    //   parent: headerDiv,
-    // });
-
-    // Left arrow
-    const leftArrow = createSpan({
-      cls: 'heatmap-calendar-arrow left',
-      text: '◀',
-      parent: headerDiv,
-      attr: {
-        'aria-label': 'Previous Year',
-        role: 'button',
-        tabindex: '0',
-      },
-    });
-
-    // Year display
-    createSpan({
-      cls: 'heatmap-calendar-year-display',
-      text: String(year),
-      parent: headerDiv,
-    });
-
-    // Right arrow
-    const rightArrow = createSpan({
-      cls: 'heatmap-calendar-arrow right',
-      text: '▶',
-      parent: headerDiv,
-      attr: {
-        'aria-label': 'Next Year',
-        role: 'button',
-        tabindex: '0',
-      },
-    });
-
-    return { leftArrow, rightArrow };
-  }
-
-  renderHeatmapCalendar = (
-    el: HTMLElement,
-    calendarData: CalendarData
-  ): void => {
-    const elContent = el.querySelector('.heatmap-calendar-graph');
-    if (elContent) {
-      // Clear the parent element to prevent duplication
-      elContent.innerHTML = '';
-    }
-
-    // Create the main container for the calendar
-    const heatmapCalendarGraphDiv = elContent ?? createDiv({
-      cls: 'heatmap-calendar-graph',
-      parent: el,
-    });
-
-
-    // Get the current year from calendarData or default settings
-    const year = calendarData.year ?? this.settings.year;
-
-    // Determine colors
+  getColors(calendarData: CalendarData): Colors {
     const colors =
       typeof calendarData.colors === 'string'
         ? this.settings.colors[calendarData.colors]
@@ -171,43 +82,93 @@ export default class HeatmapCalendar extends Plugin {
           : this.settings.colors
         : calendarData.colors ?? this.settings.colors;
 
-    this.removeHtmlElementsNotInYear(calendarData.entries, year);
+    return colors;
+  }
 
-    const calEntries = calendarData.entries.filter((e) => {
-      if (!this.isValidDate(e.date)) return false;
-      return new Date(e.date).getFullYear() === year;
-    }) ?? this.settings.entries;
+  getShowCurrentDayBorderSetting(calendarData: CalendarData): boolean {
+    return calendarData.showCurrentDayBorder ?? this.settings.showCurrentDayBorder;
+  }
 
-    const showCurrentDayBorder =
-      calendarData.showCurrentDayBorder ?? this.settings.showCurrentDayBorder;
+  getDefaultEntryIntensitySetting(calendarData: CalendarData): number {
+    return calendarData.defaultEntryIntensity ?? this.settings.defaultEntryIntensity;
+  }
 
-    const defaultEntryIntensity =
-      calendarData.defaultEntryIntensity ?? this.settings.defaultEntryIntensity;
-
-    const intensities = calEntries
+  getEntriesIntensities(entries: Entry[]): number[] {
+    return entries
       .filter((e) => e.intensity)
       .map((e) => e.intensity as number);
+  }
 
-    const minimumIntensity = intensities.length
-      ? Math.min(...intensities)
-      : this.settings.intensityScaleStart;
+  getMinMaxIntensities(intensities: number[]): [number, number] {
+    return [
+      intensities.length ? Math.min(...intensities) : this.settings.intensityScaleStart,
+      intensities.length ? Math.max(...intensities) : this.settings.intensityScaleEnd,
+    ];
+  }
 
-    const maximumIntensity = intensities.length
-      ? Math.max(...intensities)
-      : this.settings.intensityScaleEnd;
+  getSeparateMonthsSetting(calendarData: CalendarData): boolean {
+    return calendarData.separateMonths ?? this.settings.separateMonths;
+  }
+
+  addYearNavigationListeners(el: HTMLElement, calendarData: CalendarData, currentYear: number, leftArrow: HTMLElement, rightArrow: HTMLElement) {
+    // Event listener for the left arrow
+    leftArrow.addEventListener('click', () => {
+      const newCalendarData = { ...calendarData, year: currentYear - 1 };
+      window.renderHeatmapCalendar(el, newCalendarData);
+    });
+
+    // Event listener for the right arrow
+    rightArrow.addEventListener('click', () => {
+      const newCalendarData = { ...calendarData, year: currentYear + 1 };
+      window.renderHeatmapCalendar(el, newCalendarData);
+    });
+  }
+
+  renderCalendarBoxes(parent: HTMLElement, boxes: Box[]) {
+    const boxesUl = createEl('ul', {
+      cls: 'heatmap-calendar-boxes',
+      parent,
+    });
+
+    boxes.forEach((box) => {
+      const entry = createEl('li', {
+        attr: {
+          ...(box.date && { 'data-date': box.date }),
+          style: `${box.backgroundColor ? `background-color: ${box.backgroundColor};` : ''}`,
+        },
+        cls: box.classNames,
+        parent: boxesUl,
+      });
+
+      createSpan({
+        cls: 'heatmap-calendar-content',
+        parent: entry,
+        text: box.content as string,
+      });
+    });
+
+    return boxesUl;
+  }
+
+  fillEntriesWithIntensity(entries: Entry[], calendarData: CalendarData, colors: Colors): Entry[] {
+    const defaultEntryIntensity = this.getDefaultEntryIntensitySetting(calendarData);
+    const intensities = this.getEntriesIntensities(entries);
+
+    const [minimumIntensity, maximumIntensity] = this.getMinMaxIntensities(intensities);
 
     const intensityScaleStart =
       calendarData.intensityScaleStart ?? minimumIntensity;
 
     const intensityScaleEnd =
       calendarData.intensityScaleEnd ?? maximumIntensity;
+    const entriesWithIntensity: Entry[] = [];
 
-    const mappedEntries: Entry[] = [];
-    calEntries.forEach((e) => {
+    entries.forEach((e) => {
       const newEntry = {
         intensity: defaultEntryIntensity,
         ...e,
       };
+
       const colorIntensities =
         typeof colors === 'string'
           ? this.settings.colors[colors]
@@ -222,7 +183,7 @@ export default class HeatmapCalendar extends Plugin {
         newEntry.intensity = numOfColorIntensities;
       } else {
         newEntry.intensity = Math.round(
-          this.map(
+          mapRange(
             newEntry.intensity,
             intensityScaleStart,
             intensityScaleEnd,
@@ -232,20 +193,13 @@ export default class HeatmapCalendar extends Plugin {
         );
       }
 
-      mappedEntries[this.getDayOfYear(new Date(e.date))] = newEntry;
+      entriesWithIntensity[getDayOfYear(new Date(e.date))] = newEntry;
     });
 
-    const firstDayOfYear = new Date(Date.UTC(year, 0, 1));
-    let numberOfEmptyDaysBeforeYearBegins =
-      (firstDayOfYear.getUTCDay() + 7 - this.settings.weekStartDay) % 7;
+    return entriesWithIntensity;
+  }
 
-    interface Box {
-      backgroundColor?: string;
-      date?: string;
-      content?: string;
-      classNames?: string[];
-    }
-
+  getPrefilledBoxes(numberOfEmptyDaysBeforeYearBegins: number): Box[] {
     const boxes: Box[] = [];
 
     while (numberOfEmptyDaysBeforeYearBegins) {
@@ -253,114 +207,108 @@ export default class HeatmapCalendar extends Plugin {
       numberOfEmptyDaysBeforeYearBegins--;
     }
 
-    const lastDayOfYear = new Date(Date.UTC(year, 11, 31));
-    const numberOfDaysInYear = this.getDayOfYear(lastDayOfYear);
-    const todaysDayNumberLocal = this.getDayOfYear(new Date());
+    return boxes;
+  }
+
+  getBoxes(currentYear: number, entriesWithIntensity: Entry[], colors: Colors, separateMonths: boolean, calendarData: CalendarData): Box[] {
+    const showCurrentDayBorder = this.getShowCurrentDayBorderSetting(calendarData);
+    const numberOfEmptyDaysBeforeYearStarts = getNumberOfEmptyDaysBeforeYearStarts(currentYear, this.settings.weekStartDay);
+
+    const boxes = this.getPrefilledBoxes(numberOfEmptyDaysBeforeYearStarts);
+
+    const lastDayOfYear = getLastDayOfYear(currentYear);
+    const numberOfDaysInYear = getDayOfYear(lastDayOfYear);
+    const todaysDayNumberLocal = getDayOfYear(new Date());
 
     for (let day = 1; day <= numberOfDaysInYear; day++) {
       const box: Box = {
         classNames: [],
       };
 
-      const currentDate = new Date(year, 0, day);
+      const currentDate = new Date(currentYear, 0, day);
       const month = currentDate.toLocaleString('en-US', { month: 'short' });
+
+      // We don't need to add padding before January.
+      if (separateMonths && day > 31) {
+        const dayInMonth = Number(currentDate.toLocaleString("en-us", { day: "numeric" }));
+        if (dayInMonth === 1) {
+          for (let i = 0; i < 7; i++) {
+            boxes.push({ backgroundColor: "transparent" });
+          }
+        }
+      }
+
       box.classNames?.push(`month-${month.toLowerCase()}`);
 
       if (day === todaysDayNumberLocal && showCurrentDayBorder) {
         box.classNames?.push('today');
       }
 
-      if (mappedEntries[day]) {
+      if (entriesWithIntensity[day]) {
         box.classNames?.push('hasData');
-        const entry = mappedEntries[day];
+        const entry = entriesWithIntensity[day];
 
         box.date = entry.date;
 
         if (entry.content) {
-          box.content = typeof entry.content === 'string' ? entry.content : '';
+          box.content = entry.content;
         }
 
         const currentDayColors = entry.color
           ? colors[entry.color]
           : colors[Object.keys(colors)[0]];
+
         box.backgroundColor = currentDayColors[(entry.intensity as number) - 1];
       } else {
         box.classNames?.push('isEmpty');
       }
+
       boxes.push(box);
     }
 
-    const { leftArrow, rightArrow } = this.createCalendarHeader(heatmapCalendarGraphDiv, year, calendarData.header);
-
-    // Event listener for the left arrow
-    leftArrow.addEventListener('click', () => {
-      const newCalendarData = { ...calendarData, year: year - 1 };
-      this.renderHeatmapCalendar(el, newCalendarData);
-    });
-
-    // Event listener for the right arrow
-    rightArrow.addEventListener('click', () => {
-      const newCalendarData = { ...calendarData, year: year + 1 };
-      this.renderHeatmapCalendar(el, newCalendarData);
-    });
-
-    // Create the months and days labels
-    const heatmapCalendarMonthsUl = createEl('ul', {
-      cls: 'heatmap-calendar-months',
-      parent: heatmapCalendarGraphDiv,
-    });
-
-    // Add month labels
-    [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ].forEach((month) => {
-      createEl('li', { text: month, parent: heatmapCalendarMonthsUl });
-    });
-
-    const heatmapCalendarDaysUl = createEl('ul', {
-      cls: 'heatmap-calendar-days',
-      parent: heatmapCalendarGraphDiv,
-    });
-
-    // Add day labels
-    for (let i = 0; i < 7; i++) {
-      createEl('li', {
-        text: this.getWeekdayShort(i),
-        parent: heatmapCalendarDaysUl,
-      });
-    }
-
-    const heatmapCalendarBoxesUl = createEl('ul', {
-      cls: 'heatmap-calendar-boxes',
-      parent: heatmapCalendarGraphDiv,
-    });
-
-    // Create the calendar boxes
-    boxes.forEach((e) => {
-      const entry = createEl('li', {
-        attr: {
-          ...(e.date && { 'data-date': e.date }),
-          style: `${e.backgroundColor ? `background-color: ${e.backgroundColor};` : ''}`,
-        },
-        cls: e.classNames,
-        parent: heatmapCalendarBoxesUl,
-      });
-
-      createSpan({
-        cls: 'heatmap-calendar-content',
-        parent: entry,
-        text: e.content,
-      });
-    });
-  };
+    return boxes;
+  }
 
   async onload() {
     await this.loadSettings();
 
     this.addSettingTab(new HeatmapCalendarSettingsTab(this.app, this));
 
-    window.renderHeatmapCalendar = this.renderHeatmapCalendar.bind(this);
+    window.renderHeatmapCalendar = (
+      el: HTMLElement,
+      calendarData: CalendarData
+    ): void => {
+      // Create the main container for the calendar
+      const heatmapCalendarGraphDiv = initializeCalendarContainer(el);
+
+      // Get the current year from calendarData or default settings
+      const currentYear = this.getCurrentYear(calendarData);
+
+      // Determine colors
+      const colors = this.getColors(calendarData);
+
+      const currentYearEntries = this.getEntriesForYear(calendarData.entries, currentYear);
+
+      const separateMonths = this.getSeparateMonthsSetting(calendarData);
+
+      const entriesWithIntensity = this.fillEntriesWithIntensity(currentYearEntries, calendarData, colors);
+
+      const boxes = this.getBoxes(currentYear, entriesWithIntensity, colors, separateMonths, calendarData);
+
+      const { leftArrow, rightArrow } = renderCalendarHeader(heatmapCalendarGraphDiv, currentYear);
+      this.addYearNavigationListeners(el, calendarData, currentYear, leftArrow, rightArrow);
+
+      // Create the months and days labels
+      renderMonthLabels(heatmapCalendarGraphDiv);
+
+      renderDayLabels(heatmapCalendarGraphDiv, this.settings.weekStartDay);
+
+      const heatmapCalendarBoxesUl = this.renderCalendarBoxes(heatmapCalendarGraphDiv, boxes);
+
+      if (separateMonths) {
+        heatmapCalendarBoxesUl.className += " separate-months";
+      }
+    };
   }
 
   onunload() {

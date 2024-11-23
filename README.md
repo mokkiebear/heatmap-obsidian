@@ -12,12 +12,12 @@ To be used with [Obsidian Dataview](https://blacksmithgu.github.io/obsidian-data
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
       <source media="(prefers-color-scheme: light)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
-      <img alt="Shows a black logo in light color mode and a white one in dark color mode." src="https://user-images.githubusercontent.com/25423296/163456779-a8556205-d0a5-45e2-ac17-42d089e3c3f8.png">
+      <img alt="" src="">
     </picture>
 </p>
 
 &nbsp;
-## Howto
+## How to
 
 1. Annotate the data you want to track in your daily notes (see [Dataview annotation documentation](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/)) 
 
@@ -188,7 +188,7 @@ Dataview's time variables are supported without any conversion, as they return m
 
 &nbsp;
 
-## Development (Windows):
+## Development (Windows/Mac):
 
  ```npm run dev``` - will start an automatic TS to JS transpiler and automatically copy the generated JS/CSS/manifest files to the example vault when modified (Remember to run ```npm install``` first).
 
@@ -243,6 +243,7 @@ renderHeatmapCalendar(this.container, calendarData)
 **Version [1.0.0] - 2024-1-22**
 <details>
 <summary>Add pages for heatmap</summary>
-Now it's possible to navigate between years :)
+Initial implementation of heatmap for obsidian.
 <br>
+
 </details>
