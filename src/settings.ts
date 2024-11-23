@@ -1,10 +1,10 @@
-import HeatmapCalendar from "./main";
+import HeatmapTracker from "./main";
 import { App, PluginSettingTab, setIcon, Setting } from "obsidian";
 
-export default class HeatmapCalendarSettingsTab extends PluginSettingTab {
-  plugin: HeatmapCalendar;
+export default class HeatmapTrackerSettingsTab extends PluginSettingTab {
+  plugin: HeatmapTracker;
 
-  constructor(app: App, plugin: HeatmapCalendar) {
+  constructor(app: App, plugin: HeatmapTracker) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -45,36 +45,36 @@ export default class HeatmapCalendarSettingsTab extends PluginSettingTab {
 
     for (const [key, colors,] of Object.entries(this.plugin.settings.colors)) {
       const colorEntryContainer = containerEl.createDiv({
-        cls: "heatmap-calendar-settings-colors__container",
+        cls: "heatmap-tracker-settings-colors__container",
       });
 
       const colorDataContainer = colorEntryContainer.createDiv({
-        cls: "heatmap-calendar-settings-colors__data-container",
+        cls: "heatmap-tracker-settings-colors__data-container",
       });
 
       colorDataContainer.createEl("h4", { text: key, });
 
-      const colorRow = colorDataContainer.createDiv({ cls: "heatmap-calendar-settings-colors__row", });
+      const colorRow = colorDataContainer.createDiv({ cls: "heatmap-tracker-settings-colors__row", });
 
-      const colorsContainer = colorRow.createDiv({ cls: "heatmap-calendar-settings-colors__color-container", });
+      const colorsContainer = colorRow.createDiv({ cls: "heatmap-tracker-settings-colors__color-container", });
 
       for (const color of colors) {
         colorsContainer.createEl("div", {
-          cls: "heatmap-calendar-settings-colors__color-box",
+          cls: "heatmap-tracker-settings-colors__color-box",
           attr: {
             style: `background-color: ${color}`,
           },
         });
 
         colorsContainer.createEl("pre", {
-          cls: "heatmap-calendar-settings-colors__color-name",
+          cls: "heatmap-tracker-settings-colors__color-name",
           text: color,
         });
       }
 
       if (key !== "default") {
         const deleteColorButton = colorEntryContainer.createEl("button", {
-          cls: "mod-warning heatmap-calendar-settings-colors__delete",
+          cls: "mod-warning heatmap-tracker-settings-colors__delete",
         });
 
         setIcon(deleteColorButton, "trash");
@@ -87,20 +87,20 @@ export default class HeatmapCalendarSettingsTab extends PluginSettingTab {
   }
 
   private displayColorInput(parent: HTMLElement) {
-    const inputContainer = parent.createDiv({ cls: "heatmap-calendar-settings-colors__new-color-input-container", });
+    const inputContainer = parent.createDiv({ cls: "heatmap-tracker-settings-colors__new-color-input-container", });
 
     const colorNameInput = inputContainer.createEl("input", {
-      cls: "heatmap-calendar-settings-colors__new-color-input-name",
+      cls: "heatmap-tracker-settings-colors__new-color-input-name",
       attr: { placeholder: "Color name", type: "text", },
     });
 
     const colorValueInput = inputContainer.createEl("input", {
-      cls: "heatmap-calendar-settings-colors__new-color-input-value",
+      cls: "heatmap-tracker-settings-colors__new-color-input-value",
       attr: { placeholder: "Colors array", type: "text", },
     });
 
     const addColorButton = inputContainer.createEl("button", {
-      cls: "mod-cta heatmap-calendar-settings-colors__new-color-button",
+      cls: "mod-cta heatmap-tracker-settings-colors__new-color-button",
     });
 
     setIcon(addColorButton, "plus");
@@ -176,7 +176,7 @@ export default class HeatmapCalendarSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     new Setting(containerEl)
       .setName("Separate Months")
-      .setDesc("Separate months in your calendar views, globally.")
+      .setDesc("Separate months in your tracker views, globally.")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.separateMonths)
         .onChange(async (value) => {
@@ -190,7 +190,7 @@ export default class HeatmapCalendarSettingsTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Heatmap Calendar Settings", });
+    containerEl.createEl("h2", { text: "Heatmap Tracker Settings", });
 
     this.displayWeekStartDaySettings();
 

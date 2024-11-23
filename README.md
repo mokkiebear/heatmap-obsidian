@@ -10,27 +10,30 @@ To be used with [Obsidian Dataview](https://blacksmithgu.github.io/obsidian-data
 
 <p>
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
-      <source media="(prefers-color-scheme: light)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/github-images/preview.gif?raw=true">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/public/preview.gif?raw=true">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/mokkiebear/heatmap-tracker-obsidian/blob/main/public/preview.gif?raw=true">
       <img alt="" src="">
     </picture>
 </p>
+
+<img src="./public/mac-mockup-dark.png" />
+<img src="./public/two-mac-mockup.png" />
 
 &nbsp;
 ## How to
 
 1. Annotate the data you want to track in your daily notes (see [Dataview annotation documentation](https://blacksmithgu.github.io/obsidian-dataview/data-annotation/)) 
 
-2. Create a [DataviewJS block](https://blacksmithgu.github.io/obsidian-dataview/api/intro/) where you want the Heatmap Calendar to display.  
+2. Create a [DataviewJS block](https://blacksmithgu.github.io/obsidian-dataview/api/intro/) where you want the Heatmap Tracker to display.  
 
 3. Collect the data you want to display using [DataviewJS](https://blacksmithgu.github.io/obsidian-dataview/api/code-reference/)
 
-4. Pass the data into Heatmap Calendar using  **renderHeatmapCalendar()** 
+4. Pass the data into Heatmap Tracker using  **renderHeatmapTracker()** 
 
 &nbsp;
 
 *Visualized Concept:*
-![heatmap calendar example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/heatmap-calendar-howto3.jpg?raw=true)
+![heatmap tracker example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/heatmap-tracker-howto3.jpg?raw=true)
 
 
 ## Full Example Code:
@@ -39,7 +42,7 @@ To be used with [Obsidian Dataview](https://blacksmithgu.github.io/obsidian-data
 \```dataviewjs // PS. remove backslash \ at the very beginning!
 
 dv.span("** 😊 Title  😥**") /* optional ⏹️💤⚡⚠🧩↑↓⏳📔💾📁📝🔄📝🔀⌨️🕸️📅🔍✨ */
-const calendarData = {
+const trackerData = {
 	year: 2022,  // (optional) defaults to current year
 	colors: {    // (optional) defaults to green
 		blue:        ["#8cb9ff", "#69a3ff", "#428bff", "#1872ff", "#0058e2"], // first entry is considered default if supplied
@@ -59,15 +62,15 @@ const calendarData = {
 //DataviewJS loop
 for (let page of dv.pages('"daily notes"').where(p => p.exercise)) {
 	//dv.span("<br>" + page.file.name) // uncomment for troubleshooting
-	calendarData.entries.push({
+	trackerData.entries.push({
 		date: page.file.name,     // (required) Format YYYY-MM-DD
 		intensity: page.exercise, // (required) the data you want to track, will map color intensities automatically
 		content: "🏋️",           // (optional) Add text to the date cell
-		color: "orange",          // (optional) Reference from *calendarData.colors*. If no color is supplied; colors[0] is used
+		color: "orange",          // (optional) Reference from *trackerData.colors*. If no color is supplied; colors[0] is used
 	})
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ~~~
@@ -82,16 +85,16 @@ The heatmap uses a green color scheme by default, just like Github.
 
 **Default Color: green (no color specified)**
 
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/colors_defaultColorExample.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/colors_defaultColorExample.png?raw=true)
 
 &nbsp;
 
 
 **Custom Color**
 
-You can customize the colors of the heatmap by supplying a color array to **calendarData.colors**:
+You can customize the colors of the heatmap by supplying a color array to **trackerData.colors**:
 
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/colors_customColorExample.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/colors_customColorExample.png?raw=true)
 
 &nbsp;
 
@@ -103,9 +106,9 @@ You can customize the colors of the heatmap by supplying a color array to **cale
 <b>Multi-Color:</b>
 
 You can use multiple colors to display different data-entries in the same heatmap.
-Specifying the name you gave the color in calendarData.colors (eg. "blue", "pink" etc).
+Specifying the name you gave the color in trackerData.colors (eg. "blue", "pink" etc).
 
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/colors_multiDataSingleHeatmap.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/colors_multiDataSingleHeatmap.png?raw=true)
 
 
 
@@ -114,9 +117,9 @@ Specifying the name you gave the color in calendarData.colors (eg. "blue", "pink
 Use Obsidian's built in "CSS snippets" for custom styling including styling the empty days (aka the background cells).  
 
 But remember this will affect all of you heatmaps in all of your notes.
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/snippetCodeExample.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/snippetCodeExample.png?raw=true)
 
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/colors_cssSnippetsBeforeAfterEmptyDays.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/colors_cssSnippetsBeforeAfterEmptyDays.png?raw=true)
 
 
 
@@ -124,18 +127,18 @@ But remember this will affect all of you heatmaps in all of your notes.
 
 You can also add a color scheme via the Settings panel. This scheme which will be available everywhere.
 
-In order to do so go to `Obsidian Settings > Heatmap Calendar`, you will see a list of available colors, and you can add your own. You must specify a “Color name” by which you will reference it in your render call, and provide a valid array of colors.
+In order to do so go to `Obsidian Settings > Heatmap Tracker`, you will see a list of available colors, and you can add your own. You must specify a “Color name” by which you will reference it in your render call, and provide a valid array of colors.
 
 When you do so, you can now reference your scheme everywhere by passing your name to the `colors` option. For example, let's say you have defined a new color called `githubGreen`. Now, in your code, you can reference it like so:
 
 ~~~javascript
 ```dataviewjs
-const calendarData = {
+const trackerData = {
 	colors: "githubGreen",
 	entries: [],
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 ```
 ~~~
 
@@ -158,7 +161,7 @@ renderHeatmapCalendar(this.container, calendarData)
 ## Data Intensity:
 Set which intensity of color to use (eg. from light-green to dark-green etc).
 
-![heatmap calendar custom colors example](https://github.com/Richardsl/heatmap-calendar-obsidian/blob/master/github-images/intensity_example.png?raw=true)
+![heatmap tracker custom colors example](https://github.com/Richardsl/heatmap-tracker-obsidian/blob/master/github-images/intensity_example.png?raw=true)
 
 <details>
 <summary>More</summary>
@@ -166,7 +169,7 @@ Set which intensity of color to use (eg. from light-green to dark-green etc).
 They color-range will be distributed between the highest and lowest number you pass to "intensity".
 
 If the number range 0-100 is used, numbers between 1-20 would map to the lightest color, 40-60 would map to mid intensity color, and 80-100 would map to max intensity.
-You can add more intensities in order to increase color resolution; simply supply more colors to <b>calendarData.colors.yourcolor</b>
+You can add more intensities in order to increase color resolution; simply supply more colors to <b>trackerData.colors.yourcolor</b>
 
 Dataview's time variables are supported without any conversion, as they return milliseconds by default.  
 <b>[time:: 1 hours, 35 minutes] => intensity: page.time</b>
@@ -181,10 +184,10 @@ Dataview's time variables are supported without any conversion, as they return m
 
 
 ## Other Notes:
-- See the [EXAMPLE VAULT](https://github.com/Richardsl/heatmap-calendar-obsidian/tree/master/EXAMPLE_VAULT) if you want to test out the examples.
+- See the [EXAMPLE VAULT](https://github.com/Richardsl/heatmap-tracker-obsidian/tree/master/EXAMPLE_VAULT) if you want to test out the examples.
 - Week start day is configurable
-- Date format is YYYY-MM-DD, if your daily note filename is something else, [you can use JS to change it in the loop](https://github.com/Richardsl/heatmap-calendar-obsidian/discussions/2)
-- Use Obsidian CSS snippets for custom styling. See [snippet examples](https://github.com/Richardsl/heatmap-calendar-obsidian/tree/master/EXAMPLE_VAULT/.obsidian/snippets).
+- Date format is YYYY-MM-DD, if your daily note filename is something else, [you can use JS to change it in the loop](https://github.com/Richardsl/heatmap-tracker-obsidian/discussions/2)
+- Use Obsidian CSS snippets for custom styling. See [snippet examples](https://github.com/Richardsl/heatmap-tracker-obsidian/tree/master/EXAMPLE_VAULT/.obsidian/snippets).
 
 &nbsp;
 
@@ -194,7 +197,7 @@ Dataview's time variables are supported without any conversion, as they return m
 
  After the files have been transpiled, the **hot-reload plugin** (https://github.com/pjeby/hot-reload) then reloads Obsidian automatically.
  Hot-reload is installed in the example vault by default. its used to avoid restarting obsidian after every change to code.  
- *(remember to add an empty *.hotreload* file to "EXAMPLE_VAULT/.obsidian/plugins/heatmap-calendar/" if not already present, as this tells hot-reload to watch for changes)*
+ *(remember to add an empty *.hotreload* file to "EXAMPLE_VAULT/.obsidian/plugins/heatmap-tracker/" if not already present, as this tells hot-reload to watch for changes)*
 
 
 ```npm run build``` generates the files ready for distribution.
@@ -208,11 +211,11 @@ Tip: ```ctrl-shift-i``` opens the devtools inside Obsidian.
 
 
 ## Technical Explanation
-All the plugin does, is add the function ***renderHeatmapCalendar()*** to the global namespace of you vault.
+All the plugin does, is add the function ***renderHeatmapTracker()*** to the global namespace of you vault.
 
-**"this.container"** is passed as the first argument because the plugin needs to know where to render the calendar. You don't have to worry about this.
+**"this.container"** is passed as the first argument because the plugin needs to know where to render the tracker. You don't have to worry about this.
 
-"renderHeatmapCalendar()" then takes **"calendarData"** as the secondary argument. This is the javascript object you have to create yourself in order to give plugin instructions and data. Most of the properties are optional, but you have to supply an entries array as an absolute minimum.  
+"renderHeatmapTracker()" then takes **"trackerData"** as the secondary argument. This is the javascript object you have to create yourself in order to give plugin instructions and data. Most of the properties are optional, but you have to supply an entries array as an absolute minimum.  
 
 See the beginning of the readme for the full code example.
 
@@ -220,11 +223,11 @@ See the beginning of the readme for the full code example.
 ~~~javascript
 \```dataviewjs
 
-const calendarData = {
+const trackerData = {
     entries: [],                
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ~~~

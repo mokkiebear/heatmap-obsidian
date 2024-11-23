@@ -1,13 +1,13 @@
 /* Base styles */
-.heatmap-calendar-graph,
-.heatmap-calendar-graph ul,
-.heatmap-calendar-graph>* {
+.heatmap-tracker-graph,
+.heatmap-tracker-graph ul,
+.heatmap-tracker-graph>* {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.heatmap-calendar-graph {
+.heatmap-tracker-graph {
   font-size: 0.65em;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -20,7 +20,7 @@
 }
 
 /* Months */
-.heatmap-calendar-months {
+.heatmap-tracker-months {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-area: months;
@@ -29,14 +29,14 @@
 }
 
 /* Days */
-.heatmap-calendar-days {
+.heatmap-tracker-days {
   grid-area: days;
   margin: 0 0.3em 0 0.1em;
   white-space: nowrap;
 }
 
 /* Boxes */
-.heatmap-calendar-boxes {
+.heatmap-tracker-boxes {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: repeat(53, minmax(0, 1fr));
@@ -45,7 +45,7 @@
   grid-gap: 2px;
 }
 
-.heatmap-calendar-boxes li {
+.heatmap-tracker-boxes li {
   position: relative;
   font-size: 0.75em;
   width: 100%;
@@ -54,25 +54,25 @@
   margin-inline-start: auto !important;
 }
 
-.heatmap-calendar-boxes li:hover {
+.heatmap-tracker-boxes li:hover {
   transform: scale(1.4);
   border: solid 1px rgb(61, 61, 61);
   cursor: pointer;
 }
 
-.heatmap-calendar-arrow {
+.heatmap-tracker-arrow {
   cursor: pointer;
 }
 
-.heatmap-calendar-year-display {
+.heatmap-tracker-year-display {
   margin: 0 12px;
 }
 
-.heatmap-calendar-boxes li:not(.task-list-item)::before {
+.heatmap-tracker-boxes li:not(.task-list-item)::before {
   content: unset;
 }
 
-.heatmap-calendar-boxes .internal-link {
+.heatmap-tracker-boxes .internal-link {
   text-decoration: none;
   position: absolute;
   width: 100%;
@@ -80,43 +80,43 @@
   text-align: center;
 }
 
-.heatmap-calendar-boxes .today {
+.heatmap-tracker-boxes .today {
   border: solid 1px rgb(61, 61, 61);
 }
 
-.theme-dark .heatmap-calendar-boxes .isEmpty {
+.theme-dark .heatmap-tracker-boxes .isEmpty {
   background: #333;
 }
 
 /* Year */
-.heatmap-calendar-year {
+.heatmap-tracker-year {
   grid-area: year;
   font-weight: bold;
   font-size: 1.2em;
 }
 
 /* Days visibility */
-.heatmap-calendar-days li:nth-child(odd) {
+.heatmap-tracker-days li:nth-child(odd) {
   visibility: hidden;
 }
 
 /* Settings */
-.heatmap-calendar-settings-colors__color-box {
+.heatmap-tracker-settings-colors__color-box {
   width: 10px;
   height: 10px;
   display: inline-block;
   margin: 0 5px;
 }
 
-.heatmap-calendar-settings-colors__color-box:first-child {
+.heatmap-tracker-settings-colors__color-box:first-child {
   margin-left: 0;
 }
 
-.heatmap-calendar-settings-colors__color-name {
+.heatmap-tracker-settings-colors__color-name {
   display: inline-block;
 }
 
-.heatmap-calendar-settings-colors__container {
+.heatmap-tracker-settings-colors__container {
   align-items: center;
   border-top: 1px solid var(--background-modifier-border);
   display: flex;
@@ -124,30 +124,30 @@
   padding: 0.5em 0;
 }
 
-.heatmap-calendar-settings-colors__container h4 {
+.heatmap-tracker-settings-colors__container h4 {
   margin: 0.5em 0;
 }
 
-.heatmap-calendar-settings-colors__new-color-input-container {
+.heatmap-tracker-settings-colors__new-color-input-container {
   display: flex;
   justify-content: space-between;
 }
 
-.heatmap-calendar-settings-colors__new-color-input-container input {
+.heatmap-tracker-settings-colors__new-color-input-container input {
   margin-right: 1em;
 }
 
-.heatmap-calendar-settings-colors__new-color-input-value {
+.heatmap-tracker-settings-colors__new-color-input-value {
   flex-grow: 1;
 }
 
-.heatmap-calendar-boxes.separate-months {
+.heatmap-tracker-boxes.separate-months {
   grid-auto-flow: column;
   grid-template-columns: repeat(64, minmax(0, 1fr));
   grid-area: boxes;
 }
 
-.theme-dark .heatmap-calendar-boxes .today {
+.theme-dark .heatmap-tracker-boxes .today {
   border: solid 1px white;
 }
 

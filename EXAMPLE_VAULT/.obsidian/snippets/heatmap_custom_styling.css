@@ -5,11 +5,11 @@
 
 /* Change default color of empty days */
 /* Light mode */
-.heatmap-calendar-boxes .isEmpty {
+.heatmap-tracker-boxes .isEmpty {
     background: rgb(226, 233, 226) !important;
 }
  /* Dark mode */
-.theme-dark .heatmap-calendar-boxes .isEmpty{
+.theme-dark .heatmap-tracker-boxes .isEmpty{
     background: rgb(182, 121, 121) !important;
 }
 /* ------------------------------------  */

@@ -1,15 +1,15 @@
 import { Plugin } from 'obsidian';
-import HeatmapCalendarSettingsTab from './settings';
+import HeatmapTrackerSettingsTab from './settings';
 import { getDayOfYear, getLastDayOfYear, getNumberOfEmptyDaysBeforeYearStarts, isValidDate, mapRange } from './utils/core';
-import { initializeCalendarContainer, renderCalendarHeader, renderDayLabels, renderMonthLabels } from './utils/rendering';
+import { initializeTrackerContainer, renderTrackerHeader, renderDayLabels, renderMonthLabels } from './utils/rendering';
 
 declare global {
   interface Window {
-    renderHeatmapCalendar: (el: HTMLElement, calendarData: CalendarData) => void;
+    renderHeatmapTracker: (el: HTMLElement, trackerData: TrackerData) => void;
   }
 }
 
-interface CalendarData {
+interface TrackerData {
   year: number;
   colors: { [index: string | number]: string[] } | string;
   entries: Entry[];
@@ -20,7 +20,7 @@ interface CalendarData {
   separateMonths: boolean;
 }
 
-interface CalendarSettings extends CalendarData {
+interface TrackerSettings extends TrackerData {
   colors: { [index: string | number]: string[] };
   weekStartDay: number;
   separateMonths: boolean;
@@ -43,7 +43,7 @@ interface Box {
 
 type Colors = { [index: string | number]: string[] };
 
-const DEFAULT_SETTINGS: CalendarSettings = {
+const DEFAULT_SETTINGS: TrackerSettings = {
   year: new Date().getFullYear(),
   colors: {
     default: ['#c6e48b', '#7bc96f', '#49af5d', '#2e8840', '#196127'],
@@ -54,11 +54,11 @@ const DEFAULT_SETTINGS: CalendarSettings = {
   intensityScaleStart: 1,
   intensityScaleEnd: 5,
   weekStartDay: 1,
-  separateMonths: true,
+  separateMonths: false,
 };
 
-export default class HeatmapCalendar extends Plugin {
-  settings: CalendarSettings = DEFAULT_SETTINGS;
+export default class HeatmapTracker extends Plugin {
+  settings: TrackerSettings = DEFAULT_SETTINGS;
 
   getEntriesForYear(entries: Entry[], year: number): Entry[] {
     return entries.filter((e) => {
@@ -70,27 +70,27 @@ export default class HeatmapCalendar extends Plugin {
     }) ?? this.settings.entries;
   }
 
-  getCurrentYear(calendarData: CalendarData): number {
-    return calendarData.year ?? this.settings.year;
+  getCurrentYear(trackerData: TrackerData): number {
+    return trackerData.year ?? this.settings.year;
   }
 
-  getColors(calendarData: CalendarData): Colors {
+  getColors(trackerData: TrackerData): Colors {
     const colors =
-      typeof calendarData.colors === 'string'
-        ? this.settings.colors[calendarData.colors]
-          ? { [calendarData.colors]: this.settings.colors[calendarData.colors] }
+      typeof trackerData.colors === 'string'
+        ? this.settings.colors[trackerData.colors]
+          ? { [trackerData.colors]: this.settings.colors[trackerData.colors] }
           : this.settings.colors
-        : calendarData.colors ?? this.settings.colors;
+        : trackerData.colors ?? this.settings.colors;
 
     return colors;
   }
 
-  getShowCurrentDayBorderSetting(calendarData: CalendarData): boolean {
-    return calendarData.showCurrentDayBorder ?? this.settings.showCurrentDayBorder;
+  getShowCurrentDayBorderSetting(trackerData: TrackerData): boolean {
+    return trackerData.showCurrentDayBorder ?? this.settings.showCurrentDayBorder;
   }
 
-  getDefaultEntryIntensitySetting(calendarData: CalendarData): number {
-    return calendarData.defaultEntryIntensity ?? this.settings.defaultEntryIntensity;
+  getDefaultEntryIntensitySetting(trackerData: TrackerData): number {
+    return trackerData.defaultEntryIntensity ?? this.settings.defaultEntryIntensity;
   }
 
   getEntriesIntensities(entries: Entry[]): number[] {
@@ -106,27 +106,27 @@ export default class HeatmapCalendar extends Plugin {
     ];
   }
 
-  getSeparateMonthsSetting(calendarData: CalendarData): boolean {
-    return calendarData.separateMonths ?? this.settings.separateMonths;
+  getSeparateMonthsSetting(trackerData: TrackerData): boolean {
+    return trackerData.separateMonths ?? this.settings.separateMonths;
   }
 
-  addYearNavigationListeners(el: HTMLElement, calendarData: CalendarData, currentYear: number, leftArrow: HTMLElement, rightArrow: HTMLElement) {
+  addYearNavigationListeners(el: HTMLElement, trackerData: TrackerData, currentYear: number, leftArrow: HTMLElement, rightArrow: HTMLElement) {
     // Event listener for the left arrow
     leftArrow.addEventListener('click', () => {
-      const newCalendarData = { ...calendarData, year: currentYear - 1 };
-      window.renderHeatmapCalendar(el, newCalendarData);
+      const newTrackerData = { ...trackerData, year: currentYear - 1 };
+      window.renderHeatmapTracker(el, newTrackerData);
     });
 
     // Event listener for the right arrow
     rightArrow.addEventListener('click', () => {
-      const newCalendarData = { ...calendarData, year: currentYear + 1 };
-      window.renderHeatmapCalendar(el, newCalendarData);
+      const newTrackerData = { ...trackerData, year: currentYear + 1 };
+      window.renderHeatmapTracker(el, newTrackerData);
     });
   }
 
-  renderCalendarBoxes(parent: HTMLElement, boxes: Box[]) {
+  renderTrackerBoxes(parent: HTMLElement, boxes: Box[]) {
     const boxesUl = createEl('ul', {
-      cls: 'heatmap-calendar-boxes',
+      cls: 'heatmap-tracker-boxes',
       parent,
     });
 
@@ -141,7 +141,7 @@ export default class HeatmapCalendar extends Plugin {
       });
 
       createSpan({
-        cls: 'heatmap-calendar-content',
+        cls: 'heatmap-tracker-content',
         parent: entry,
         text: box.content as string,
       });
@@ -150,17 +150,17 @@ export default class HeatmapCalendar extends Plugin {
     return boxesUl;
   }
 
-  fillEntriesWithIntensity(entries: Entry[], calendarData: CalendarData, colors: Colors): Entry[] {
-    const defaultEntryIntensity = this.getDefaultEntryIntensitySetting(calendarData);
+  fillEntriesWithIntensity(entries: Entry[], trackerData: TrackerData, colors: Colors): Entry[] {
+    const defaultEntryIntensity = this.getDefaultEntryIntensitySetting(trackerData);
     const intensities = this.getEntriesIntensities(entries);
 
     const [minimumIntensity, maximumIntensity] = this.getMinMaxIntensities(intensities);
 
     const intensityScaleStart =
-      calendarData.intensityScaleStart ?? minimumIntensity;
+      trackerData.intensityScaleStart ?? minimumIntensity;
 
     const intensityScaleEnd =
-      calendarData.intensityScaleEnd ?? maximumIntensity;
+      trackerData.intensityScaleEnd ?? maximumIntensity;
     const entriesWithIntensity: Entry[] = [];
 
     entries.forEach((e) => {
@@ -210,8 +210,8 @@ export default class HeatmapCalendar extends Plugin {
     return boxes;
   }
 
-  getBoxes(currentYear: number, entriesWithIntensity: Entry[], colors: Colors, separateMonths: boolean, calendarData: CalendarData): Box[] {
-    const showCurrentDayBorder = this.getShowCurrentDayBorderSetting(calendarData);
+  getBoxes(currentYear: number, entriesWithIntensity: Entry[], colors: Colors, separateMonths: boolean, trackerData: TrackerData): Box[] {
+    const showCurrentDayBorder = this.getShowCurrentDayBorderSetting(trackerData);
     const numberOfEmptyDaysBeforeYearStarts = getNumberOfEmptyDaysBeforeYearStarts(currentYear, this.settings.weekStartDay);
 
     const boxes = this.getPrefilledBoxes(numberOfEmptyDaysBeforeYearStarts);
@@ -272,47 +272,47 @@ export default class HeatmapCalendar extends Plugin {
   async onload() {
     await this.loadSettings();
 
-    this.addSettingTab(new HeatmapCalendarSettingsTab(this.app, this));
+    this.addSettingTab(new HeatmapTrackerSettingsTab(this.app, this));
 
-    window.renderHeatmapCalendar = (
+    window.renderHeatmapTracker = (
       el: HTMLElement,
-      calendarData: CalendarData
+      trackerData: TrackerData
     ): void => {
-      // Create the main container for the calendar
-      const heatmapCalendarGraphDiv = initializeCalendarContainer(el);
+      // Create the main container for the tracker
+      const heatmapTrackerGraphDiv = initializeTrackerContainer(el);
 
-      // Get the current year from calendarData or default settings
-      const currentYear = this.getCurrentYear(calendarData);
+      // Get the current year from trackerData or default settings
+      const currentYear = this.getCurrentYear(trackerData);
 
       // Determine colors
-      const colors = this.getColors(calendarData);
+      const colors = this.getColors(trackerData);
 
-      const currentYearEntries = this.getEntriesForYear(calendarData.entries, currentYear);
+      const currentYearEntries = this.getEntriesForYear(trackerData.entries, currentYear);
 
-      const separateMonths = this.getSeparateMonthsSetting(calendarData);
+      const separateMonths = this.getSeparateMonthsSetting(trackerData);
 
-      const entriesWithIntensity = this.fillEntriesWithIntensity(currentYearEntries, calendarData, colors);
+      const entriesWithIntensity = this.fillEntriesWithIntensity(currentYearEntries, trackerData, colors);
 
-      const boxes = this.getBoxes(currentYear, entriesWithIntensity, colors, separateMonths, calendarData);
+      const boxes = this.getBoxes(currentYear, entriesWithIntensity, colors, separateMonths, trackerData);
 
-      const { leftArrow, rightArrow } = renderCalendarHeader(heatmapCalendarGraphDiv, currentYear);
-      this.addYearNavigationListeners(el, calendarData, currentYear, leftArrow, rightArrow);
+      const { leftArrow, rightArrow } = renderTrackerHeader(heatmapTrackerGraphDiv, currentYear);
+      this.addYearNavigationListeners(el, trackerData, currentYear, leftArrow, rightArrow);
 
       // Create the months and days labels
-      renderMonthLabels(heatmapCalendarGraphDiv);
+      renderMonthLabels(heatmapTrackerGraphDiv);
 
-      renderDayLabels(heatmapCalendarGraphDiv, this.settings.weekStartDay);
+      renderDayLabels(heatmapTrackerGraphDiv, this.settings.weekStartDay);
 
-      const heatmapCalendarBoxesUl = this.renderCalendarBoxes(heatmapCalendarGraphDiv, boxes);
+      const heatmapTrackerBoxesUl = this.renderTrackerBoxes(heatmapTrackerGraphDiv, boxes);
 
       if (separateMonths) {
-        heatmapCalendarBoxesUl.className += " separate-months";
+        heatmapTrackerBoxesUl.className += " separate-months";
       }
     };
   }
 
   onunload() {
-    console.log('Unloading HeatmapCalendar plugin');
+    console.log('Unloading HeatmapTracker plugin');
   }
 
   async loadSettings() {

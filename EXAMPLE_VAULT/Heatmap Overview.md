@@ -1,4 +1,3 @@
-# Overview
 
 ```dataviewjs
 
@@ -34,7 +33,7 @@ function getInitialData() {
 
 dv.span("** 🗄️ Example: If you need to prefill your data 🗄️ **")
 
-const calendarData = {
+const trackerData = {
       year: 2024,
       entries: Object.values(getInitialData()).map((date) => ({
           date,
@@ -44,24 +43,25 @@ const calendarData = {
     };
 
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 
 ```dataviewjs
 
-const calendarData = {
+const trackerData = {
     year: 2024,
     intensityScaleEnd: 45 * 60 * 1000, //convert 45 minutes to millis
     colors: {
         red: ["#ff9e82","#ff7b55","#ff4d1a","#e73400","#bd2a00",
         "hsl(132, 90%, 40%)"] //last one green
     },
-    entries: []
+    entries: [],
+    separateMonths: true
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.exercise)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.exercise,
         content: await dv.span(`[](${page.file.name})`)
@@ -70,15 +70,16 @@ for(let page of dv.pages('"daily notes"').where(p=>p.exercise)){
 
 dv.paragraph("**🏋️ Exercises 🏋️**");
 dv.paragraph("**Green** - if you achieved your exercises goal (45 minutes in this example)");
+dv.paragraph("**separateMonths: true** - to add padding between months");
 
-renderHeatmapCalendar(this.container, calendarData);
+renderHeatmapTracker(this.container, trackerData);
 ```
 
 ```dataviewjs
 
 dv.span("** 👣 Steps 👣 **")
 
-const calendarData = {
+const trackerData = {
     year: 2024, // optional, remove this line to autoswitch year
     entries: [],
 }
@@ -86,20 +87,20 @@ const calendarData = {
  
 for(let page of dv.pages('"daily notes"').where(p=>p.steps)){
 
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.steps
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ```dataviewjs
 
 dv.span("** 👣 Steps 👣 ** (11 intensities instead of 5)")
 
-const calendarData = {
+const trackerData = {
     year: 2024, // optional, remove this line to autoswitch year
     entries: [],
     colors: {
@@ -122,20 +123,20 @@ const calendarData = {
  
 for(let page of dv.pages('"daily notes"').where(p=>p.steps)){
 
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.steps
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ```dataviewjs
 
 dv.span("** 👣 Steps 👣 ** (custom scale from 1000 to 10000)")
 
-const calendarData = {
+const trackerData = {
     year: 2024, // optional, remove this line to autoswitch year
     entries: [],
     intensityScaleStart: 1000,
@@ -145,20 +146,20 @@ const calendarData = {
  
 for(let page of dv.pages('"daily notes"').where(p=>p.steps)){
 
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.steps
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ```dataviewjs
 
 dv.span("** 👣 Steps 👣 ** (11 intensities + scale from 2000)")
 
-const calendarData = {
+const trackerData = {
     year: 2022, // optional, remove this line to autoswitch year
     entries: [],
     intensityScaleStart: 2000,
@@ -177,13 +178,13 @@ const calendarData = {
  
 for(let page of dv.pages('"daily notes"').where(p=>p.steps)){
 
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.steps
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 
@@ -191,7 +192,7 @@ renderHeatmapCalendar(this.container, calendarData)
 
 dv.span("** Learning **")
 
-const calendarData = {
+const trackerData = {
     year: 2024,
     colors: {
         blue: ["#ffdf04","#ffbe04","#ff9a03","#ff6d02","#ff2c01"]
@@ -201,20 +202,20 @@ const calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.learning)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.learning
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 ```dataviewjs
 
 dv.span("** learning ** (everything over 8 is full intensity red)")
 
-const calendarData = {
+const trackerData = {
     year: 2022,
     colors: {
         blue: ["#ffdf04","#ffbe04","#ff9a03","#ff6d02","#ff2c01"]
@@ -227,13 +228,13 @@ const calendarData = {
 for(let page of dv.pages('"daily notes"').where(p=>p.learning)){
 	//dv.paragraph(page.file.name + " learning: " + page.learning)
     
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.learning
     })  
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
 
@@ -241,7 +242,7 @@ renderHeatmapCalendar(this.container, calendarData)
 
 dv.span("**🔗 learning **- Dont break the chain! 🔗🔗🔗🔗")
 
-const calendarData = {
+const trackerData = {
     year: 2022,
     colors: {
         transparent: ["transparent"],
@@ -251,18 +252,28 @@ const calendarData = {
 
 for(let page of dv.pages('"daily notes"').where(p=>p.learning)){
 	 
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: 4,
         content: "🔗"
     })   
 }
 
-//console.log(calendarData)
+//console.log(trackerData)
 	
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
+
+
+### Quick Guide 
+- Install **"Dataview"** and **"Heatmap Tracker"** from the community plugins page.
+- Enable **Settings** -> **Dataview** -> **Enable Javascript Queries**
+
+**Hover Preview**
+- Enable **Settings** -> **Core Plugins** -> **Page Preview** for hover preview to work.
+- install **Community plugins** -> **Metatable** in order to preview frontmatter aswell.
+
 
 ## For testing
 ```dataviewjs
@@ -270,7 +281,7 @@ renderHeatmapCalendar(this.container, calendarData)
 dv.span("**test intensities 0to5**")
 const heat = ["#1C0298","#2500D9","#6F04D7","#C911CF","#FD06B2","#FD5C81","#FD7A48","#FD9A75","#FDD276","#FCE4B2"]
 
-let calendarData = {
+let trackerData = {
     year: 2022,
     colors: {
         red: heat
@@ -279,19 +290,19 @@ let calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.intensity0to5)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.intensity0to5
     })
        
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 
 dv.span("**test intensities 0to5ish**")
 
-calendarData = {
+trackerData = {
     year: 2022,
     colors: {
         red: heat
@@ -300,20 +311,20 @@ calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.intensity0to5ish)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.intensity0to5ish
     })
        
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 
 
 dv.span("**test intensities 0to10**")
 
-calendarData = {
+trackerData = {
     year: 2022,
     colors: {
         red: heat
@@ -322,19 +333,19 @@ calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.intensity0to10)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.intensity0to10
     })
        
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 
 dv.span("**test intensities 0to25**")
 
-calendarData = {
+trackerData = {
     year: 2022,
     colors: {
         red: heat
@@ -343,19 +354,19 @@ calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.intensity0to25)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.intensity0to25
     })
        
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 
 dv.span("**test intensities 0to25 + scale end 15**")
 
-calendarData = {
+trackerData = {
     year: 2022,
     intensityScaleEnd: 15,
     colors: {
@@ -365,14 +376,13 @@ calendarData = {
 }
 
 for(let page of dv.pages('"daily notes"').where(p=>p.intensity0to25)){
-    calendarData.entries.push({
+    trackerData.entries.push({
         date: page.file.name,
         intensity: page.intensity0to25
     })
        
 }
 
-renderHeatmapCalendar(this.container, calendarData)
+renderHeatmapTracker(this.container, trackerData)
 
 ```
-

@@ -1,23 +1,23 @@
 import { getWeekdayShort } from "./core";
 
-export function initializeCalendarContainer(el: HTMLElement): HTMLElement {
-  const elContent = el.querySelector('.heatmap-calendar-graph');
+export function initializeTrackerContainer(el: HTMLElement): HTMLElement {
+  const elContent = el.querySelector('.heatmap-tracker-graph');
   if (elContent) {
     // Clear the parent element to prevent duplication
     elContent.innerHTML = '';
   }
 
   return elContent as HTMLDivElement ?? createDiv({
-    cls: 'heatmap-calendar-graph',
+    cls: 'heatmap-tracker-graph',
     parent: el,
   });
 }
 
-export function renderCalendarHeader(parent: HTMLElement, year: number) {
-  const headerDiv = createDiv({ cls: 'heatmap-calendar-header', parent });
+export function renderTrackerHeader(parent: HTMLElement, year: number) {
+  const headerDiv = createDiv({ cls: 'heatmap-tracker-header', parent });
 
   const leftArrow = createSpan({
-    cls: 'heatmap-calendar-arrow left',
+    cls: 'heatmap-tracker-arrow left',
     text: '◀',
     parent: headerDiv,
     attr: {
@@ -28,13 +28,13 @@ export function renderCalendarHeader(parent: HTMLElement, year: number) {
   });
 
   createSpan({
-    cls: 'heatmap-calendar-year-display',
+    cls: 'heatmap-tracker-year-display',
     text: String(year),
     parent: headerDiv,
   });
 
   const rightArrow = createSpan({
-    cls: 'heatmap-calendar-arrow right',
+    cls: 'heatmap-tracker-arrow right',
     text: '▶',
     parent: headerDiv,
     attr: {
@@ -48,7 +48,7 @@ export function renderCalendarHeader(parent: HTMLElement, year: number) {
 }
 
 export function renderMonthLabels(parent: HTMLElement) {
-  const monthsUl = createEl('ul', { cls: 'heatmap-calendar-months', parent });
+  const monthsUl = createEl('ul', { cls: 'heatmap-tracker-months', parent });
 
   ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].forEach(
     (month) => {
@@ -60,7 +60,7 @@ export function renderMonthLabels(parent: HTMLElement) {
 }
 
 export function renderDayLabels(parent: HTMLElement, weekStartDay: number) {
-  const daysUl = createEl('ul', { cls: 'heatmap-calendar-days', parent });
+  const daysUl = createEl('ul', { cls: 'heatmap-tracker-days', parent });
 
   for (let i = 0; i < 7; i++) {
     createEl('li', {

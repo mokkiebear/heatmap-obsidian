@@ -11,7 +11,7 @@ do
   for DAY in {1..20}
   do
     DAY_PADDED=$(printf "%02d" $DAY)
-    FILENAME="${OUTPUT_DIR}/${YEAR}-04-${DAY_PADDED}.md"
+    FILENAME="${OUTPUT_DIR}/${YEAR}-05-${DAY_PADDED}.md"
     STEPS=$((RANDOM % 10000 + 1000))
     EXERCISE=$((RANDOM % 60 + 10))
     LEARNING=$((RANDOM % 120 + 10))

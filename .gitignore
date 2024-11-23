@@ -31,9 +31,9 @@ EXAMPLE_VAULT/.obsidian/workspace.json
 # exclude plugin contents
 EXAMPLE_VAULT/.obsidian/plugins/*
 !EXAMPLE_VAULT/.obsidian/plugins/hot-reload
-# include heatmap-calendar plugin folder, but ignore contents except for .hotreload file
-!EXAMPLE_VAULT/.obsidian/plugins/heatmap-calendar
-EXAMPLE_VAULT/.obsidian/plugins/heatmap-calendar/*
-!EXAMPLE_VAULT/.obsidian/plugins/heatmap-calendar/.hotreload
+# include heatmap-tracker plugin folder, but ignore contents except for .hotreload file
+!EXAMPLE_VAULT/.obsidian/plugins/heatmap-tracker
+EXAMPLE_VAULT/.obsidian/plugins/heatmap-tracker/*
+!EXAMPLE_VAULT/.obsidian/plugins/heatmap-tracker/.hotreload
 
 coverage
