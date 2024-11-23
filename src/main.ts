@@ -100,9 +100,13 @@ export default class HeatmapTracker extends Plugin {
   }
 
   getMinMaxIntensities(intensities: number[]): [number, number] {
+    if (!intensities.length) {
+      return [this.settings.intensityScaleStart, this.settings.intensityScaleEnd];
+    }
+
     return [
-      intensities.length ? Math.min(...intensities) : this.settings.intensityScaleStart,
-      intensities.length ? Math.max(...intensities) : this.settings.intensityScaleEnd,
+      Math.min(...intensities),
+      Math.max(...intensities),
     ];
   }
 
@@ -156,11 +160,9 @@ export default class HeatmapTracker extends Plugin {
 
     const [minimumIntensity, maximumIntensity] = this.getMinMaxIntensities(intensities);
 
-    const intensityScaleStart =
-      trackerData.intensityScaleStart ?? minimumIntensity;
+    const intensityScaleStart = trackerData.intensityScaleStart ?? minimumIntensity;
+    const intensityScaleEnd = trackerData.intensityScaleEnd ?? maximumIntensity;
 
-    const intensityScaleEnd =
-      trackerData.intensityScaleEnd ?? maximumIntensity;
     const entriesWithIntensity: Entry[] = [];
 
     entries.forEach((e) => {
@@ -176,38 +178,23 @@ export default class HeatmapTracker extends Plugin {
 
       const numOfColorIntensities = Object.keys(colorIntensities).length;
 
-      if (
-        minimumIntensity === maximumIntensity &&
-        intensityScaleStart === intensityScaleEnd
-      ) {
+      if (minimumIntensity === maximumIntensity && intensityScaleStart === intensityScaleEnd) {
         newEntry.intensity = numOfColorIntensities;
       } else {
         newEntry.intensity = Math.round(
-          mapRange(
-            newEntry.intensity,
-            intensityScaleStart,
-            intensityScaleEnd,
-            1,
-            numOfColorIntensities
-          )
+          mapRange(newEntry.intensity, intensityScaleStart, intensityScaleEnd, 1, numOfColorIntensities)
         );
       }
 
-      entriesWithIntensity[getDayOfYear(new Date(e.date))] = newEntry;
+      const day = getDayOfYear(new Date(e.date));
+      entriesWithIntensity[day] = newEntry;
     });
 
     return entriesWithIntensity;
   }
 
   getPrefilledBoxes(numberOfEmptyDaysBeforeYearBegins: number): Box[] {
-    const boxes: Box[] = [];
-
-    while (numberOfEmptyDaysBeforeYearBegins) {
-      boxes.push({ backgroundColor: 'transparent' });
-      numberOfEmptyDaysBeforeYearBegins--;
-    }
-
-    return boxes;
+    return Array(numberOfEmptyDaysBeforeYearBegins).fill({ backgroundColor: 'transparent' });
   }
 
   getBoxes(currentYear: number, entriesWithIntensity: Entry[], colors: Colors, separateMonths: boolean, trackerData: TrackerData): Box[] {
